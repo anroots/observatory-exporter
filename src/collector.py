@@ -28,7 +28,7 @@ class ObservatoryCollector(object):
 
             scan_results = self.observatory.scan(target)
 
-            if not scan_results:
+            if scan_results is None:
                 logger.warning('Did not get scan results for target %s, skipping it', target)
                 continue
 

@@ -30,9 +30,15 @@ class Observatory:
             self.logger.fatal('API endpoint returned invalid JSON, can not parse it')
             self.logger.fatal(r.text)
             sys.exit(1)
+
         if 'error' in response:
             self.logger.warning(response.get('text'))
             return None
+
+        if 'score' not in response:
+            self.logger.debug('No score yet for target %s, will retry later', target)
+            return None
+
         return response
 
     @staticmethod
