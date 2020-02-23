@@ -33,9 +33,9 @@ class ObservatoryCollector(object):
                 continue
 
             gauge = GaugeMetricFamily("http_observatory_score", 'Numerical overall score from Observatory',
-                                      labels=['target', 'grade', 'scan_time'])
+                                      labels=['target', 'grade'])
 
-            gauge.add_metric([target, scan_results.get('grade'), scan_results.get('end_time')],
+            gauge.add_metric([target, scan_results.get('grade')],
                              scan_results.get('score', 0))
             yield gauge
 
