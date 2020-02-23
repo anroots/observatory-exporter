@@ -5,9 +5,10 @@ import sys
 
 
 class Observatory:
-    def __init__(self, logger, api_url):
+    def __init__(self, logger, api_url, timeout = 15):
         self.api_url = api_url
         self.logger = logger
+        self.timeout = timeout
 
     def scan(self, target):
 
@@ -16,7 +17,7 @@ class Observatory:
         scan_endpoint = '{}/analyze'.format(self.api_url)
 
         try:
-            r = requests.post(url=scan_endpoint, params={'host':target, 'rescan': 'true'}, headers=self.get_request_headers())
+            r = requests.post(url=scan_endpoint, params={'host':target, 'rescan': 'true'}, headers=self.get_request_headers(), timeout=self.timeout)
             if not r.ok:
                 return None
         except requests.exceptions.RequestException as e:
