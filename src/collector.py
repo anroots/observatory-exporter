@@ -48,7 +48,7 @@ class ObservatoryCollector(object):
 
             yield gauge
 
-            logger.info('%s received score of %d on %s', target, int(scan_results.get('score', 0)),
+            logger.info('%s received score of %d on %s', target, scan_results.get('score', 0),
                         scan_results.get('end_time'))
 
         logger.info('Scraping completed')
