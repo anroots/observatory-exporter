@@ -17,6 +17,8 @@ class Observatory:
 
         try:
             r = requests.post(url=scan_endpoint, params={'host':target, 'rescan': 'true'}, headers=self.get_request_headers())
+            if not r.ok:
+                return None
         except requests.exceptions.RequestException as e:
             self.logger.fatal(e)
             self.logger.fatal('Received error from HTTP request, exiting')
@@ -27,7 +29,9 @@ class Observatory:
             self.logger.fatal('API endpoint returned invalid JSON, can not parse it')
             self.logger.fatal(r.text)
             sys.exit(1)
-
+        if 'error' in response:
+            self.logger.warning(response.get('text'))
+            return None
         return response
 
     @staticmethod

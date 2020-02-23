@@ -2,6 +2,9 @@
 
 A custom [Prometheus exporter][] for exporting metrics from [Mozilla Observatory][] scanner.
 
+_N.B! Current version of this exporter is unstable; and with not a lot of error handling.
+It was thrown together for an immediate need. Needs more development to become stable._
+
 ## Usage
 
 This is designed to be run in a Docker container. Deploy it to your Docker platform of choice.

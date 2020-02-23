@@ -27,6 +27,9 @@ class ObservatoryCollector(object):
 
             scan_results = self.observatory.scan(target)
 
+            if not scan_results:
+                logger.warning('Did not get scan results for target %s, skipping it', target)
+                continue
 
             gauge = GaugeMetricFamily("http_observatory_score", 'Numerical overall score from Observatory',
                                       labels=['target', 'grade', 'scan_time'])
