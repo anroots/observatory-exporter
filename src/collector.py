@@ -10,7 +10,8 @@ from src.lib.observatory import Observatory
 
 REQUEST_TIME = Summary('request_processing_seconds', 'Time spent processing request')
 
-logging.basicConfig(level=os.environ.get('LOG_LEVEL', 'INFO'), format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=os.environ.get('LOG_LEVEL', 'INFO'),
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('observatory-exporter')
 
 
@@ -34,12 +35,12 @@ class ObservatoryCollector(object):
             gauge = GaugeMetricFamily("http_observatory_score", 'Numerical overall score from Observatory',
                                       labels=['target', 'grade', 'scan_time'])
 
-            gauge.add_metric([target,scan_results.get('grade'), scan_results.get('end_time')],
-                             scan_results.get('score',0))
+            gauge.add_metric([target, scan_results.get('grade'), scan_results.get('end_time')],
+                             scan_results.get('score', 0))
             yield gauge
 
             gauge = GaugeMetricFamily("http_observatory_tests", 'Number of tests run by the Observatory',
-                                      labels=['target','type'])
+                                      labels=['target', 'type'])
 
             gauge.add_metric([target, 'failed'], scan_results.get('tests_failed'))
             gauge.add_metric([target, 'passed'], scan_results.get('tests_passed'))
@@ -47,7 +48,8 @@ class ObservatoryCollector(object):
 
             yield gauge
 
-            logger.info('%s received score of %d on %s', scan_results.get('grade'), scan_results.get('end_time'))
+            logger.info('%s received score of %d on %s', target, scan_results.get('score'),
+                        scan_results.get('end_time'))
 
         logger.info('Scraping completed')
 
