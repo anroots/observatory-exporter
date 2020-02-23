@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  exporter:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src:/opt/observatory-exporter/src:ro
+    user: "100433:0"
