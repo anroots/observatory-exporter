@@ -3,8 +3,22 @@ version: "3"
 services:
   exporter:
     build: .
-    ports:
-      - "8080:8080"
     volumes:
       - ./src:/opt/observatory-exporter/src:ro
+    environment:
+      - OBSERVATORY_TARGETS=neti.ee,postimees.ee,seb.ee,jaa.ee,delfi.ee,geenius.ee
+      - OBSERVATORY_API_URL=http://localhost:57001/api/v1
+      - LOG_LEVEL=DEBUG
     user: "100433:0"
+    network_mode: host
+
+  prometheus:
+    image: prom/prometheus:v2.1.0
+    volumes:
+      - ./test/prometheus/:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    network_mode: host

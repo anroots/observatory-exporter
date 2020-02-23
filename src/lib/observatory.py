@@ -35,8 +35,8 @@ class Observatory:
             self.logger.warning(response.get('text'))
             return None
 
-        if 'score' not in response or response.get('state') == 'PENDING':
-            self.logger.debug('No score yet for target %s (still scanning), will retry later', target)
+        if response.get('state') in ['PENDING', 'STARTING']:
+            self.logger.info('No score yet for target %s (state=%s), will retry later', target, response.get('state'))
             return None
 
         return response
