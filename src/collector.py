@@ -47,6 +47,7 @@ class ObservatoryCollector(object):
 
             yield gauge
 
+            logger.info('%s received score of %d on %s', scan_results.get('grade'), scan_results.get('end_time'))
 
         logger.info('Scraping completed')
 
@@ -59,6 +60,7 @@ if __name__ == '__main__':
     if not targets:
         logger.fatal('No targets to scan, please set environment variable OBSERVATORY_TARGETS')
         sys.exit(1)
+
     REGISTRY.register(ObservatoryCollector(api_url, targets.split(',')))
     start_http_server(8080)
     logger.info('Collector started, listening on port :8080; waiting for scrapes...')
