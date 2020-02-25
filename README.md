@@ -31,7 +31,7 @@ The following metrics will be saved:
 ```
 # HELP http_observatory_score Numerical overall score from Observatory
 # TYPE http_observatory_score gauge
-http_observatory_score{grade="C+",scan_time="Sun, 23 Feb 2020 14:24:14 GMT",target="jaa.ee"} 60.0
+http_observatory_score{target="jaa.ee"} 60.0
 # HELP http_observatory_tests Number of tests run by the Observatory
 # TYPE http_observatory_tests gauge
 http_observatory_tests{target="jaa.ee",type="failed"} 3.0

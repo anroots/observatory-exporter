@@ -36,10 +36,9 @@ class ObservatoryCollector(object):
                 logger.warning('Did not get scan results for target %s, skipping it', target)
                 continue
             gauge = GaugeMetricFamily("http_observatory_score", 'Numerical overall score from Observatory',
-                                      labels=['target', 'grade'])
+                                      labels=['target'])
 
-            gauge.add_metric([target, scan_results.get('grade','F')],
-                             scan_results.get('score', 0))
+            gauge.add_metric([target], scan_results.get('score', 0))
             yield gauge
 
             gauge = GaugeMetricFamily("http_observatory_tests", 'Number of tests run by the Observatory',
