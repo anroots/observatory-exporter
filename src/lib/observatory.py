@@ -1,45 +1,55 @@
 from json import JSONDecodeError
-
+import backoff
 import requests
-import sys
 
+class ScanStillRunningException(Exception):
+    pass
 
 class Observatory:
-    def __init__(self, logger, api_url, timeout = 15):
+    def __init__(self, logger, api_url, timeout=15):
         self.api_url = api_url
         self.logger = logger
         self.timeout = timeout
+        self.scan_endpoint = '{}/analyze'.format(self.api_url)
 
-    def scan(self, target):
+    @backoff.on_exception(backoff.expo, ScanStillRunningException, max_time=10)
+    def get_scan(self, target):
 
-        self.logger.info('Starting scan of target %s...', target)
+        self.logger.debug('Fetching scan of target %s...', target)
 
-        scan_endpoint = '{}/analyze'.format(self.api_url)
-
-        # Trigger rescan
         try:
-            requests.post(url=scan_endpoint, params={'host':target, 'rescan': 'true'}, headers=self.get_request_headers(), timeout=self.timeout)
-        except requests.exceptions.RequestException as e:
-            self.logger.fatal(e)
-            self.logger.fatal('Received error from HTTP request, exiting')
-
-        # Get last scan results
-        try:
-            r = requests.get(url=scan_endpoint, params={'host':target}, headers=self.get_request_headers(), timeout=self.timeout)
+            r = requests.post(url=self.scan_endpoint, params={'host': target}, headers=self.get_request_headers(),
+                              timeout=self.timeout)
             if not r.ok:
                 return None
         except requests.exceptions.RequestException as e:
             self.logger.fatal(e)
             self.logger.fatal('Received error from HTTP request, exiting')
             return None
-
-
         try:
             response = r.json()
+            if self.is_scan_running(response):
+                self.logger.debug('Scan for target %s still running (state=%s), waiting a bit and trying again', target,response.get('state'))
+                raise ScanStillRunningException
+
+            return response
         except JSONDecodeError as e:
             self.logger.fatal('API endpoint returned invalid JSON, can not parse it')
-            self.logger.fatal(r.text)
-            sys.exit(1)
+            self.logger.fatal(e)
+            return None
+
+    @staticmethod
+    def is_scan_running(scan_response):
+        return scan_response.get('state') in ['PENDING', 'STARTING', 'RUNNING']
+
+    def scan(self, target):
+
+        # Fetch a scan result from the API (trigger rescan)
+        response = self.get_scan(target)
+
+        # Sth went terribly wrong, details in logs
+        if response is None:
+            return None
 
         if 'error' in response:
             self.logger.warning(response.get('text'))
@@ -59,7 +69,3 @@ class Observatory:
             'Accept-Language': 'en',
             'User-Agent': 'anroots/observatory-exporter 1.0'
         }
-
-
-
-
